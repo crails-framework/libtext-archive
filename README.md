@@ -1,0 +1,3 @@
+# libtext-archive
+
+C++ library

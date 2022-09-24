@@ -1,0 +1,11 @@
+: 1
+name: libtext-archive
+version: 2.0.0
+summary: text-archive C++ library
+license: BSD-3-Clause
+description-file: README.md
+url: https://github.com/crails-framework/libtext-archive
+email: michael@unetresgrossebite.com
+depends: * build2 >= 0.15.0
+depends: * bpkg >= 0.15.0
+depends: libboost-lexical-cast >= 1.78.0

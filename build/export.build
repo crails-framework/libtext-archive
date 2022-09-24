@@ -1,0 +1,6 @@
+$out_root/
+{
+  include libtext-archive/
+}
+
+export $out_root/libtext-archive/$import.target
