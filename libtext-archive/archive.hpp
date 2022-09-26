@@ -1,5 +1,5 @@
-#ifndef  CRAILS_ARCHIVE_HPP
-# define CRAILS_ARCHIVE_HPP
+#ifndef  LIBTEXT_ARCHIVE_HPP
+# define LIBTEXT_ARCHIVE_HPP
 
 # include <memory>
 # include <string>
