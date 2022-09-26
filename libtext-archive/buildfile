@@ -1,5 +1,3 @@
-import libs += libboost-lexical-cast%lib{boost_lexical_cast}
-
 lib{text-archive}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
 
 hxx{version}: in{version} $src_root/manifest

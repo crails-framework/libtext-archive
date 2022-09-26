@@ -4,9 +4,8 @@
 # include <memory>
 # include <string>
 # include <vector>
+# include <sstream>
 # include "errors.hpp"
-# include <boost/lexical_cast.hpp>
-# define archive_lexical_cast boost::lexical_cast
 
 # define define_serializer(body) \
   template<typename ARCHIVE> \
@@ -126,10 +125,14 @@ protected:
   void unserialize_number(NUMERICAL_TYPE& value)
   {
     int length = 0;
+    std::stringstream stream;
 
     for (size_t i = offset ; i < str.size() && str[i] != ';' ; ++i)
+    {
+      stream << str[i];
       ++length;
-    value = archive_lexical_cast<NUMERICAL_TYPE>(str.substr(offset, length));
+    }
+    stream >> value;
     offset += length + 1;
   }
 
