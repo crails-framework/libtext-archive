@@ -3,14 +3,31 @@
 
 # include <exception>
 
-struct ArchiveUnmatchingTypeError : public std::exception
+struct ArchiveException : public std::exception
 {
-  unsigned char received_type;
-  unsigned char expected_type;
+};
+
+struct ArchiveNullPointerError : public ArchiveException
+{
+  const std::string dump;
+
+  ArchiveNullPointerError(const std::string& dump) : dump(dump) {}
+
+  const char* what() const noexcept override
+  {
+    return "Archive: tried to unserialize to a null pointer";
+  };
+};
+
+struct ArchiveUnmatchingTypeError : public ArchiveException
+{
+  const std::string   dump;
+  const unsigned char received_type;
+  const unsigned char expected_type;
   std::string   error;
 
-  ArchiveUnmatchingTypeError(unsigned char receive, unsigned char expected)
-    : received_type(receive), expected_type(expected)
+  ArchiveUnmatchingTypeError(const std::string& dump, unsigned char receive, unsigned char expected)
+    : dump(dump), received_type(receive), expected_type(expected)
   {
     error = std::string("Archive: unmatching types (found ") +
       static_cast<char>(received_type) +
@@ -25,7 +42,7 @@ struct ArchiveUnmatchingTypeError : public std::exception
   }
 };
 
-struct ArchiveUnimplementedSerializer : public std::exception
+struct ArchiveUnimplementedSerializer : public ArchiveException
 {
   const char* what() const noexcept override
   {
@@ -33,7 +50,7 @@ struct ArchiveUnimplementedSerializer : public std::exception
   }
 };
 
-struct ArchiveUnimplementedUnserializer : public std::exception
+struct ArchiveUnimplementedUnserializer : public ArchiveException
 {
   const char* what() const noexcept override
   {

@@ -4,15 +4,13 @@
 # include <memory>
 # include <string>
 # include <vector>
+# include <list>
+# include <set>
+# include <map>
+# include <ios>
 # include <sstream>
 # include "errors.hpp"
-
-# define define_serializer(body) \
-  template<typename ARCHIVE> \
-  void serialize(ARCHIVE& archive) \
-  { body } \
-  void serialize(IArchive& a) { serialize<IArchive>(a); } \
-  void serialize(OArchive& a) { serialize<OArchive>(a); }
+# include "archivable.hpp"
 
 class Archive
 {
@@ -22,143 +20,41 @@ public:
   const std::string& as_string() const { return str; }
 
   template<typename T>
-  char typecode()
+  static char typecode()
   {
     return '*';
   }
+
+  static constexpr char array_typecode = 'a';
+  static constexpr char map_typecode = '2';
+  static constexpr char null_typecode = '0';
+  static constexpr char pointer_typecode = '1';
+
+  std::string description(unsigned int offset = 0) const { std::stringstream stream; description(stream, offset); return stream.str(); }
+  void description(std::ostream&, unsigned int offset = 0) const;
 
 protected:
   std::string str;
 };
 
-class OArchive : public Archive
-{
-public:
-  template<typename T>
-  OArchive& operator&(const T& value)
-  {
-    str += typecode<T>();
-    serialize(value);
-    return *this;
-  }
-
-  template<typename T>
-  OArchive& operator&(const std::vector<T>& value)
-  {
-    str += 'a';
-    str += typecode<T>();
-    serialize(value.size());
-    for (auto it = value.begin() ; it != value.end() ; ++it)
-      serialize<T>(*it);
-    return *this;
-  }
-
-  template<typename T>
-  OArchive& operator&(const std::shared_ptr<T>& value)
-  {
-    return this->operator&<T>(*value);
-  }
-
-  template<typename T>
-  void serialize(const T& value)
-  {
-    throw ArchiveUnimplementedSerializer();
-  }
-};
-
-class IArchive : public Archive
-{
-public:
-  IArchive() : offset(0) {}
-
-  void set_data(const std::string& str)
-  {
-    this->str = str;
-    offset = 0;
-  }
-
-  template<typename T>
-  IArchive& operator&(T& value)
-  {
-    if (str[offset] == typecode<T>())
-      offset += 1;
-    else
-      throw ArchiveUnmatchingTypeError(str[offset], typecode<T>());
-    unserialize<T>(value);
-    return *this;
-  }
-
-  template<typename T>
-  IArchive& operator&(std::vector<T>& value)
-  {
-    int length;
-
-    if (str[offset] != 'a')
-      throw ArchiveUnmatchingTypeError(str[offset], 'a');
-    if (str[offset + 1] != typecode<T>())
-      throw ArchiveUnmatchingTypeError(str[offset + 1], typecode<T>());
-    offset += 2;
-    unserialize_number<int>(length);
-    value.resize(length);
-    for (int i = 0 ; i < length ; ++i)
-      unserialize(value[i]);
-    return *this;
-  }
-
-  template<typename T>
-  IArchive& operator&(std::shared_ptr<T>& value)
-  {
-    value = std::make_shared<T>();
-    return this->operator&<T>(*value);
-  }
-
-  template<typename T>
-  void unserialize(T& value)
-  {
-    throw ArchiveUnimplementedUnserializer();
-  }
-
-protected:
-  unsigned int offset;
-
-  template<typename NUMERICAL_TYPE>
-  void unserialize_number(NUMERICAL_TYPE& value)
-  {
-    int length = 0;
-    std::stringstream stream;
-
-    for (size_t i = offset ; i < str.size() && str[i] != ';' ; ++i)
-    {
-      stream << str[i];
-      ++length;
-    }
-    stream >> value;
-    offset += length + 1;
-  }
-
-  template<typename CHAR_TYPE>
-  void unserialize_char(CHAR_TYPE& value)
-  {
-    value = (CHAR_TYPE)(str[offset]);
-    offset += 1;
-  }
-};
-
 template<> char Archive::typecode<bool>();
+template<> char Archive::typecode<char>();
 template<> char Archive::typecode<int>();
 template<> char Archive::typecode<long>();
-template<> char Archive::typecode<unsigned int>();
-template<> char Archive::typecode<unsigned long>();
-template<> char Archive::typecode<std::string>();
 template<> char Archive::typecode<short>();
-template<> char Archive::typecode<unsigned short>();
-template<> char Archive::typecode<char>();
 template<> char Archive::typecode<unsigned char>();
+template<> char Archive::typecode<unsigned long>();
+template<> char Archive::typecode<unsigned int>();
+template<> char Archive::typecode<unsigned short>();
+template<> char Archive::typecode<std::string>();
 template<> char Archive::typecode<double>();
 template<> char Archive::typecode<long double>();
 template<> char Archive::typecode<float>();
 template<> char Archive::typecode<long long>();
 template<> char Archive::typecode<unsigned long long>();
+
+# include "serializer.hpp"
+# include "unserializer.hpp"
 
 template<> void OArchive::serialize<bool>(const bool& value);
 template<> void OArchive::serialize<char>(const char& value);
