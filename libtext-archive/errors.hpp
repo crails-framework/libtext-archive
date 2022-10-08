@@ -5,13 +5,16 @@
 
 struct ArchiveException : public std::exception
 {
+  const std::string dump;
+  ArchiveException() {}
+  ArchiveException(const std::string& d) : dump(d) {}
 };
 
 struct ArchiveNullPointerError : public ArchiveException
 {
   const std::string dump;
 
-  ArchiveNullPointerError(const std::string& dump) : dump(dump) {}
+  ArchiveNullPointerError(const std::string& dump) : ArchiveException(dump) {}
 
   const char* what() const noexcept override
   {
@@ -21,13 +24,12 @@ struct ArchiveNullPointerError : public ArchiveException
 
 struct ArchiveUnmatchingTypeError : public ArchiveException
 {
-  const std::string   dump;
   const unsigned char received_type;
   const unsigned char expected_type;
   std::string   error;
 
   ArchiveUnmatchingTypeError(const std::string& dump, unsigned char receive, unsigned char expected)
-    : dump(dump), received_type(receive), expected_type(expected)
+    : ArchiveException(dump), received_type(receive), expected_type(expected)
   {
     error = std::string("Archive: unmatching types (found ") +
       static_cast<char>(received_type) +
