@@ -8,6 +8,7 @@
 # include <set>
 # include <map>
 # include <ios>
+# include <ctime>
 # include <sstream>
 # include "errors.hpp"
 # include "archivable.hpp"
@@ -30,7 +31,7 @@ public:
   static constexpr char null_typecode = '0';
   static constexpr char pointer_typecode = '1';
 
-  std::string description(unsigned int offset = 0) const { std::stringstream stream; description(stream, offset); return stream.str(); }
+  std::string description(unsigned int offset = 0) const;
   void description(std::ostream&, unsigned int offset = 0) const;
 
 protected:
@@ -66,6 +67,11 @@ template<> void OArchive::serialize<unsigned long>(const unsigned long& value);
 template<> void OArchive::serialize<unsigned int>(const unsigned int& value);
 template<> void OArchive::serialize<unsigned short>(const unsigned short& value);
 template<> void OArchive::serialize<std::string>(const std::string& value);
+template<> void OArchive::serialize<double>(const double& value);
+template<> void OArchive::serialize<long double>(const long double& value);
+template<> void OArchive::serialize<float>(const float& value);
+template<> void OArchive::serialize<long long>(const long long& value);
+template<> void OArchive::serialize<unsigned long long>(const unsigned long long& value);
 
 template<> void IArchive::unserialize<bool>(bool& value);
 template<> void IArchive::unserialize<char>(char& value);
@@ -77,5 +83,9 @@ template<> void IArchive::unserialize<unsigned int>(unsigned int& value);
 template<> void IArchive::unserialize<unsigned long>(unsigned long& value);
 template<> void IArchive::unserialize<unsigned short>(unsigned short& value);
 template<> void IArchive::unserialize<std::string>(std::string& value);
+template<> void IArchive::unserialize<double>(double& value);
+template<> void IArchive::unserialize<long double>(long double&);
+template<> void IArchive::unserialize<float>(float&);
+template<> void IArchive::unserialize<long long>(long long&);
 
 #endif

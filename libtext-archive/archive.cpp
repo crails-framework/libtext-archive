@@ -128,6 +128,14 @@ void IArchive::output_next_value(ostream& stream)
   }
 }
 
+string Archive::description(unsigned int offset) const
+{
+  stringstream stream;
+
+  description(stream, offset);
+  return stream.str();
+}
+
 void Archive::description(ostream& stream, unsigned int offset) const
 {
   IArchive iarchive;
@@ -139,7 +147,7 @@ void Archive::description(ostream& stream, unsigned int offset) const
 
     if (offset != 0 && offset >= 0)
     {
-      stream << "** parsing error happened around here **\n";
+      stream << "** parsing error happened around here (offset " << offset << ") **\n";
       offset = 0;
     }
     if (type_name != typecode_to_typename.end())
