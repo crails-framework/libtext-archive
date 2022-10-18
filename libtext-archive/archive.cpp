@@ -145,7 +145,7 @@ void Archive::description(ostream& stream, unsigned int offset) const
   {
     auto type_name = typecode_to_typename.find(iarchive.str[iarchive.offset]);
 
-    if (offset != 0 && offset >= 0)
+    if (iarchive.offset >= offset)
     {
       stream << "** parsing error happened around here (offset " << offset << ") **\n";
       offset = 0;
