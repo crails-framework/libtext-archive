@@ -2,6 +2,7 @@
 # define CRAILS_ARCHIVE_ERRORS_HPP
 
 # include <exception>
+# include <string>
 
 struct ArchiveException : public std::exception
 {

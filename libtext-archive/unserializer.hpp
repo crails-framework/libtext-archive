@@ -56,21 +56,22 @@ class IArchive : public Archive
   template<typename T, bool reservable = false, bool archivable = std::is_base_of<Archivable, T>::value>
   struct ArraySerializer
   {
-    static IArchive& unserialize(IArchive& archive, T& value)
+    template<typename ARRAY>
+    static IArchive& unserialize(IArchive& archive, ARRAY& value)
     {
       unsigned long length;
 
       if (archive.str[archive.offset] != Archive::array_typecode)
         throw ArchiveUnmatchingTypeError(archive.description(archive.offset), archive.str[archive.offset], Archive::array_typecode);
       if (archive.str[archive.offset + 1] != archive.typecode<T>())
-        throw ArchiveUnmatchingTypeError(archive.str[archive.offset + 1], archive.typecode<T>());
+        throw ArchiveUnmatchingTypeError(archive.description(archive.offset), archive.str[archive.offset + 1], archive.typecode<T>());
       archive.offset += 2;
       archive.unserialize_number<unsigned long>(length);
-      ArrayReserve<T, reservable>::reserve(value, length);
+      ArrayReserve<ARRAY, reservable>::reserve(value, length);
       for (unsigned long i = 0 ; i < length ; ++i)
       {
         T item;
-        unserialize(item);
+        archive.unserialize<T>(item);
         value.push_back(item);
       }
       return archive;
@@ -80,7 +81,8 @@ class IArchive : public Archive
   template<typename T, bool reservable>
   struct ArraySerializer<T, reservable, true>
   {
-    static IArchive& unserialize(IArchive& archive, T& value)
+    template<typename ARRAY>
+    static IArchive& unserialize(IArchive& archive, ARRAY& value)
     {
       unsigned long length;
 
@@ -88,7 +90,7 @@ class IArchive : public Archive
         throw ArchiveUnmatchingTypeError(archive.description(archive.offset), archive.str[archive.offset], Archive::array_typecode);
       archive.offset += 1;
       archive.unserialize_number<unsigned long>(length);
-      ArrayReserve<T, reservable>::reserve(value, length);
+      ArrayReserve<ARRAY, reservable>::reserve(value, length);
       for (unsigned long i = 0 ; i < length ; ++i)
       {
         value.push_back(T());

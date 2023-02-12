@@ -49,7 +49,7 @@ class OArchive : public Archive
       archive.str += archive.typecode<T>();
       archive.serialize<unsigned long>(list.size());
       for (auto it = list.begin() ; it != list.end() ; ++it)
-        archive.serialize<T>(*list);
+        archive.serialize<T>(*it);
       return archive;
     }
   };
