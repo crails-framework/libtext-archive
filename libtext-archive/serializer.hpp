@@ -43,13 +43,14 @@ class OArchive : public Archive
   template<typename T, bool archivable = std::is_base_of<Archivable, T>::value>
   struct ArraySerializer
   {
-    static OArchive& serialize(OArchive& archive, const T& list)
+    template<typename ARRAY>
+    static OArchive& serialize(OArchive& archive, const ARRAY& list)
     {
       archive.str += Archive::array_typecode;
       archive.str += archive.typecode<T>();
       archive.serialize<unsigned long>(list.size());
       for (auto it = list.begin() ; it != list.end() ; ++it)
-        archive.serialize<typename T::value_type>(*it);
+        archive.serialize<typename ARRAY::value_type>(*it);
       return archive;
     }
   };
@@ -57,7 +58,8 @@ class OArchive : public Archive
   template<typename T>
   struct ArraySerializer<T, true>
   {
-    static OArchive& serialize(OArchive& archive, const T& list)
+    template<typename ARRAY>
+    static OArchive& serialize(OArchive& archive, const ARRAY& list)
     {
       archive.str += Archive::array_typecode;
       archive.serialize<unsigned long>(list.size());
