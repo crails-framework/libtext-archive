@@ -47,17 +47,31 @@ struct ArchiveUnmatchingTypeError : public ArchiveException
 
 struct ArchiveUnimplementedSerializer : public ArchiveException
 {
+  std::string message;
+
+  ArchiveUnimplementedSerializer(const std::string& type)
+  {
+    message = "Archive: unimplemented serializer for `" + type + '`';
+  }
+
   const char* what() const noexcept override
   {
-    return "Archive: unimplemented serializer";
+    return message.c_str();
   }
 };
 
 struct ArchiveUnimplementedUnserializer : public ArchiveException
 {
+  std::string message;
+
+  ArchiveUnimplementedUnserializer(const std::string& type)
+  {
+    message = "Archive: unimplemented unserializer for `" + type + '`';
+  }
+
   const char* what() const noexcept override
   {
-    return "Archive: unimplemented unserializer";
+    return message.c_str();
   }
 };
 

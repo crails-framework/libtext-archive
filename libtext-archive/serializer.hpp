@@ -107,7 +107,7 @@ public:
   template<typename T>
   void serialize(const T&)
   {
-    throw ArchiveUnimplementedSerializer();
+    throw ArchiveUnimplementedSerializer(typeid(T).name());
   }
 };
 

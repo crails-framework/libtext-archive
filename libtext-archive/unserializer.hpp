@@ -184,7 +184,7 @@ public:
   template<typename T>
   void unserialize(T&)
   {
-    throw ArchiveUnimplementedUnserializer();
+    throw ArchiveUnimplementedUnserializer(typeid(T).name());
   }
 
   void output_next_value(std::ostream&);
