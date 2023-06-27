@@ -5,7 +5,7 @@
 
 class OArchive : public Archive
 {
-  template<typename T, bool archivable = std::is_base_of<Archive, T>::value, bool pointer = std::is_pointer<T>::value>
+  template<typename T, bool archivable = std::is_base_of<Archivable, T>::value, bool pointer = std::is_pointer<T>::value>
   struct Serializer
   {
     static OArchive& serialize(OArchive& archive, const T& value)
